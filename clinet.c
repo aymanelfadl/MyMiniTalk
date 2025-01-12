@@ -1,8 +1,5 @@
 #include <unistd.h>
-#include <stdio.h>
 #include <signal.h>
-#include <string.h>
-#include <stdlib.h>
 
 void send_msg(int pid, char c)
 {
@@ -26,10 +23,10 @@ int main(int argc, char *argv[])
 {
     if (argc != 3)
     {
-        printf("Usage: %s <PID> <message>\n", argv[0]);
+        ft_printf("Usage: %s <PID> <message>\n", argv[0]);
         return 1;
     }
-    int pid = atoi(argv[1]);
+    int pid = ft_atoi(argv[1]);
     char *str = argv[2];
     int i = 0;
     while (str[i])
@@ -38,7 +35,7 @@ int main(int argc, char *argv[])
         i++;
     }
     send_msg(pid, '\0');
-    printf("The message to PID %d: %s\n", pid, str);
+    ft_printf("The message to PID %d: %s\n", pid, str);
     return 0;
 }
 

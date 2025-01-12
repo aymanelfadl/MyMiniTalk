@@ -27,7 +27,7 @@ int main()
 {
     pid_t pid = getpid();
 
-    printf("PID: %d\n", pid);
+    ft_printf("PID: %d\n", pid);
 
     signal(SIGUSR1, handler);
     signal(SIGUSR2, handler);
