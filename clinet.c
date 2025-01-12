@@ -9,16 +9,16 @@ void send_msg(int pid, char c)
     int i = 8;
     unsigned char tmp;
 
-    tmp = c;
+    tmp = 0;
     while (i > 0)
     {
         i--;
- 	tmp = c >> i; 
-        if (tmp) 
-		kill(pid, SIGUSR1);
+ 	    tmp = c >> i; 
+        if (tmp % 2 == 0) 
+		    kill(pid, SIGUSR1);
         else
-            	kill(pid, SIGUSR2);
-        usleep(100);
+            kill(pid, SIGUSR2);
+        usleep(5000); 
     }
 }
 
@@ -33,7 +33,6 @@ int main(int argc, char *argv[])
     int pid = atoi(argv[1]);
     char *str = argv[2];
 
-    printf("Sending message to PID %d: %s\n", pid, str);
 
     int i = 0;
     while (str[i])
@@ -42,6 +41,7 @@ int main(int argc, char *argv[])
         i++;
     }
     send_msg(pid, '\0');
+    printf("The message to PID %d: %s\n", pid, str);
     return 0;
 }
 
