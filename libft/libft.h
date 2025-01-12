@@ -16,7 +16,7 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <limits.h>
-
+# include <string.h>
 /* Libc functions */
 int					ft_isalpha(int c);
 int					ft_isdigit(int c);
