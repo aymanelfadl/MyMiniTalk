@@ -9,10 +9,7 @@ void handler(int signum)
     static int index;
 
     index++;
-    if(signum == SIGUSR1)
-        c |= 0;
-    if (signum == SIGUSR2)
-        c |= 1;
+    c |= (signum == SIGUSR2);
     if (index == 8)
     {
         if(c == '\0')

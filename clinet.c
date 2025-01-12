@@ -29,11 +29,8 @@ int main(int argc, char *argv[])
         printf("Usage: %s <PID> <message>\n", argv[0]);
         return 1;
     }
-
     int pid = atoi(argv[1]);
     char *str = argv[2];
-
-
     int i = 0;
     while (str[i])
     {
