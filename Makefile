@@ -31,4 +31,4 @@ clean:
 fclean: clean
 	rm -f $(SERVER_N) $(CLIENT_N) 
 
-re: fclean all
+re: fclean $(SERVER_N) $(CLIENT_N)
