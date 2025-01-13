@@ -2,6 +2,13 @@
 #include <signal.h>
 #include "libft/libft.h"
 
+void ft_no_stop(int signum)
+{
+
+    ft_printf("the %d wait",signum);
+}
+
+
 void send_msg(int pid, char c)
 {
     int i = 8;
@@ -16,12 +23,23 @@ void send_msg(int pid, char c)
 		    kill(pid, SIGUSR1);
         else
             kill(pid, SIGUSR2);
-        usleep(20); 
+        usleep(100); 
     }
 }
 
 int main(int argc, char *argv[])
 {
+
+    struct sigaction sa;
+
+    sa.sa_handler = ft_no_stop;
+    sigemptyset(&sa.sa_mask);     
+    sa.sa_flags = 0;
+    if (sigaction(SIGINT, &sa, NULL) == -1)
+    {
+        ft_printf("Failed to set up SIGINT handler.\n");
+        return 1;
+    }
     if (argc != 3)
     {
         ft_printf("Usage: %s <PID> <message>\n", argv[0]);
@@ -30,6 +48,7 @@ int main(int argc, char *argv[])
     int pid = ft_atoi(argv[1]);
     char *str = argv[2];
     int i = 0;
+
     while (str[i])
     {
         send_msg(pid, str[i]);
