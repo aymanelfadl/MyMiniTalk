@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <signal.h>
 #include <string.h>
+#include "libft/libft.h"
 
 void handler(int signum)
 {

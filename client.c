@@ -1,5 +1,6 @@
 #include <unistd.h>
 #include <signal.h>
+#include "libft/libft.h"
 
 void send_msg(int pid, char c)
 {

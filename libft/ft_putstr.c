@@ -1,33 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_puthexam.c                                      :+:      :+:    :+:   */
+/*   ft_putstr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aelfadl <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/11 13:20:20 by aelfadl           #+#    #+#             */
-/*   Updated: 2024/12/11 13:24:43 by aelfadl          ###   ########.fr       */
+/*   Created: 2024/12/11 13:21:37 by aelfadl           #+#    #+#             */
+/*   Updated: 2024/12/11 13:22:15 by aelfadl          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
+#include "libft.h"
 
-int	ft_puthexam(long n)
+int	ft_putstr(char *s)
 {
-	unsigned int	num;
-	char			c;
-	int				count;
-
-	num = (unsigned int)n;
-	count = 0;
-	if (num == 0)
-		return (write(1, "0", 1));
-	if (num >= 16)
-		count += ft_puthexam(num / 16);
-	if (num % 16 < 10)
-		c = (num % 16) + '0';
-	else
-		c = (num % 16) - 10 + 'A';
-	count += write(1, &c, 1);
-	return (count);
+	if (!s)
+		return (write(1, "(null)", ft_strlen("(null)")));
+	return (write(1, s, ft_strlen(s)));
 }
