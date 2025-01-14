@@ -1,5 +1,5 @@
+
 #include <unistd.h>
-#include <stdio.h>
 #include <signal.h>
 #include <string.h>
 #include "libft/libft.h"
@@ -24,17 +24,17 @@ void handler(int signum)
         c <<= 1;
 }
 
-int main()
+int main(int c, )
 {
     pid_t pid = getpid();
 
     ft_printf("PID: %d\n", pid);
 
-    signal(SIGUSR1, handler);
-    signal(SIGUSR2, handler);
-
+    
     while(1)
     {
+        signal(SIGUSR1, handler);
+        signal(SIGUSR2, handler);
         pause();
     }
     return 0;

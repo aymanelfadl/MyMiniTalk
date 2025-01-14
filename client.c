@@ -13,36 +13,46 @@ void send_msg(int pid, char c)
     {
         i--;
  	    tmp = c >> i; 
-        if (tmp % 2 == 0) 
-		    kill(pid, SIGUSR1);
+        if (tmp % 2 == 0)
+        {
+		    if ((kill(pid, SIGUSR1)) == -1)
+            {
+                ft_printf("ERR IN SIGUSR1!!");
+                exit(EXIT_FAILURE);
+            }
+        }
         else
-            kill(pid, SIGUSR2);
-        usleep(100); 
-    }
-}
+        {
+            if ((kill(pid, SIGUSR2)) == -1)
+            {
+                ft_printf("ERR IN SIGUSR1!!");
+                exit(EXIT_FAILURE);
+            }
 
-void stop_signal()
-{
-    ft_printf("\n You can't stop me brother");
+        }
+        usleep(500); 
+    }
 }
 
 int main(int argc, char *argv[])
 {
-    if (argc != 3)
+    if (argc == 3)
+    {
+        int i;
+     
+        i = 0;
+        while (argv[2][i])
+        {
+            send_msg(ft_atoi(argv[1]), argv[2][i]);
+            i++;
+        }
+        send_msg(ft_atoi(argv[1]), '\0');
+        return 0;     
+    }
+    else
     {
         ft_printf("Usage: %s <PID> <message>\n", argv[0]);
         return 1;
     }
-    int pid = ft_atoi(argv[1]);
-    char *str = argv[2];
-    int i = 0;
-    signal(SIGINT, stop_signal);
-    while (str[i])
-    {
-        send_msg(pid, str[i]);
-        i++;
-    }
-    send_msg(pid, '\0');
-    return 0;
 }
 

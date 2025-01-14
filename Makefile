@@ -10,25 +10,26 @@ LIB = $(LIB_DIR)/$(LIB_FILE)
 
 INCLUDES = -I$(LIB_DIR)
 
-all: $(SERVER_N)
+all: $(SERVER_N) $(CLIENT_N)
 
-$(SERVER_N): server.o $(LIBFT)
-	$(CC) $(CFLAGS) $< -L$(LIB_DIR) -lft $(INCLUDES) -o $@
+$(SERVER_N): server.o $(LIB)
+	$(CC) $(CFLAGS) server.o -L$(LIB_DIR) -lft $(INCLUDES) -o $@
 
-$(CLIENT_N): client.o $(LIBFT)
-	$(CC) $(CFLAGS) $< -L$(LIB_DIR) -lft $(INCLUDES) -o $@
+$(CLIENT_N): client.o $(LIB)
+	$(CC) $(CFLAGS) client.o -L$(LIB_DIR) -lft $(INCLUDES) -o $@
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(LIBFT):
-	$(MAKE) -C libft
+$(LIB):
+	$(MAKE) -C $(LIB_DIR)
 
 clean:
-	rm -f *.o $(LIBFT)
-	$(MAKE) clean -C libft
+	rm -f *.o
+	$(MAKE) clean -C $(LIB_DIR)
 
 fclean: clean
-	rm -f $(SERVER_N) $(CLIENT_N) 
+	rm -f $(SERVER_N) $(CLIENT_N)
+	$(MAKE) fclean -C $(LIB_DIR)
 
-re: fclean $(SERVER_N) $(CLIENT_N)
+re: fclean all
