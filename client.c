@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include "libft/libft.h"
+#include <stdlib.h>
 
 void send_msg(int pid, char c)
 {
@@ -16,8 +17,14 @@ void send_msg(int pid, char c)
 		    kill(pid, SIGUSR1);
         else
             kill(pid, SIGUSR2);
-        usleep(20); 
+        usleep(100); 
     }
+}
+
+void stop_signal()
+{
+    
+    ft_printf("\n You can't stop me brother");
 }
 
 int main(int argc, char *argv[])
@@ -30,13 +37,13 @@ int main(int argc, char *argv[])
     int pid = ft_atoi(argv[1]);
     char *str = argv[2];
     int i = 0;
+    signal(SIGINT, stop_signal);
     while (str[i])
     {
         send_msg(pid, str[i]);
         i++;
     }
     send_msg(pid, '\0');
-    ft_printf("The message to PID %d: %s\n", pid, str);
     return 0;
 }
 
