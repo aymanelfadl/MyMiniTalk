@@ -23,7 +23,6 @@ void send_msg(int pid, char c)
 
 void stop_signal()
 {
-    
     ft_printf("\n You can't stop me brother");
 }
 
