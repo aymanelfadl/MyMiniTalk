@@ -15,24 +15,39 @@
 #include <string.h>
 #include "libft/libft.h"
 
+int msg_in_prog = 0;
+
 void	handler(int signum)
 {
 	static int				index;
 	static unsigned char	c;
 
-	index++;
-	c |= (signum == SIGUSR2);
-	if (index == 8)
+	if (msg_in_prog)
 	{
-		if (c == '\0')
-			write (1, "\n", 1);
+		index++;
+		c |= (signum == SIGUSR2);
+		if (index == 8)
+		{
+			if (c == '\0')
+			{
+				write (1, "\n", 1);
+				msg_in_prog = 0;
+			}
+			else
+				write (1, &c, 1);
+			index = 0;
+			c = 0;
+		}
 		else
-			write (1, &c, 1);
+			c <<= 1;
+	}
+	if (signum == SIGUSR2 && !msg_in_prog)
+	{
+		msg_in_prog = 1;
 		index = 0;
 		c = 0;
 	}
-	else
-		c <<= 1;
+	
 }
 
 int	main(void)

@@ -17,18 +17,13 @@
 
 void	send_msg(int pid, char c)
 {
-	int		i;
-	unsigned char	tmp;
-
-
+	int				i;
 
 	i = 8;
-	tmp = 0;
 	while (i > 0)
 	{
 		i--;
-		tmp = c >> i;
-		if (tmp % 2 == 0)
+		if ((((unsigned char)c >> i) % 2) == 0)
 		{
 			if ((kill(pid, SIGUSR1)) == -1)
 			{
@@ -48,13 +43,21 @@ void	send_msg(int pid, char c)
 	}
 }
 
+
 int	main(int argc, char *argv[])
 {
-	int i;
+	int	i;
+
+
+	// signal(SIGABRT, send_reset);
+	// signal(SIGTERM, send_reset);
+	// signal(SIGINT, send_reset);
+	// signal(SIGKILL, send_reset);
 
 	if (argc == 3)
 	{
 		i = 0;
+		kill(ft_atoi(argv[1]), SIGUSR2);
 		while (argv[2][i])
 		{
 			send_msg(ft_atoi(argv[1]), argv[2][i]);
