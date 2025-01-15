@@ -1,42 +1,51 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   server.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aelfadl <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/14 23:38:14 by aelfadl           #+#    #+#             */
+/*   Updated: 2025/01/14 23:45:56 by aelfadl          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include <unistd.h>
 #include <signal.h>
 #include <string.h>
 #include "libft/libft.h"
 
-void handler(int signum)
+void	handler(int signum)
 {
-    static unsigned char c;
-    static int index;
+	static int				index;
+	static unsigned char	c;
 
-    index++;
-    c |= (signum == SIGUSR2);
-    if (index == 8)
-    {
-        if(c == '\0')
-            write(1,"\n",1);
-        else
-            write(1, &c, 1);
-        index = 0;
-        c = 0;
-    }
-    else
-        c <<= 1;
+	index++;
+	c |= (signum == SIGUSR2);
+	if (index == 8)
+	{
+		if (c == '\0')
+			write (1, "\n", 1);
+		else
+			write (1, &c, 1);
+		index = 0;
+		c = 0;
+	}
+	else
+		c <<= 1;
 }
 
-int main(int c, )
+int	main(void)
 {
-    pid_t pid = getpid();
+	pid_t	pid;
 
-    ft_printf("PID: %d\n", pid);
-
-    
-    while(1)
-    {
-        signal(SIGUSR1, handler);
-        signal(SIGUSR2, handler);
-        pause();
-    }
-    return 0;
+	pid = getpid();
+	ft_printf ("PID: %d\n", pid);
+	while (1)
+	{
+		signal(SIGUSR1, handler);
+		signal(SIGUSR2, handler);
+		pause();
+	}
+	return (0);
 }
-
