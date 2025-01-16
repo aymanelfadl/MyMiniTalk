@@ -42,18 +42,12 @@ void	handler(int signum)
 int	main(void)
 {
 	pid_t	pid;
-	struct sigaction sa;
-
-	sa.sa_handler = handler;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_SIGINFO;
-
 	pid = getpid();
 	ft_printf ("PID: %d\n", pid);
 	while (1)
 	{
-		sigaction(SIGUSR1, &sa, NULL);
-		sigaction(SIGUSR2, &sa, NULL);
+		signal(SIGUSR1, handler);
+		signal(SIGUSR2, handler);
 		pause();
 	}
 	return (0);

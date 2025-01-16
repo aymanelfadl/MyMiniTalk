@@ -17,6 +17,20 @@
 
 void	send_msg(int pid, char c)
 {
+	struct sigaction sa;
+	sigset_t mySet;
+
+	sigfillset(&mySet);
+
+	sigdelset (&mySet, SIGUSR1);
+	sigdelset (&mySet, SIGUSR2);
+
+	sa.sa_handler = handler;
+	sa.sa_flags = SA_SIGINFO;
+	sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0; 
+
+	sa.sa_mask = mySet;
 	int				i;
 
 	i = 8;
@@ -35,11 +49,11 @@ void	send_msg(int pid, char c)
 		{
 			if ((kill(pid, SIGUSR2)) == -1)
 			{
-				ft_printf("ERR IN SIGUSR1!!");
+				ft_printf("ERR IN SIGUSR2 ");
 				exit(EXIT_FAILURE);
 			}
 		}
-		usleep(800);
+		usleep(1000);
 	}
 }
 
@@ -59,7 +73,7 @@ int	is_valid_pid(const char *str)
 int	main(int argc, char *argv[])
 {
 	int	i;
-		
+
 	if (argc == 3)
 	{
 		i = 0;
