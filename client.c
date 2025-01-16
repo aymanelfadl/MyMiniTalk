@@ -39,31 +39,41 @@ void	send_msg(int pid, char c)
 				exit(EXIT_FAILURE);
 			}
 		}
-		usleep(500);
+		usleep(800);
 	}
 }
 
+int	is_valid_pid(const char *str)
+{
+	int	i = 0;
+
+	while (str[i])
+	{
+		if (!ft_isdigit(str[i]))
+			return (0);
+		i++;
+	}
+	return (1);
+}
 
 int	main(int argc, char *argv[])
 {
 	int	i;
-
-
-	// signal(SIGABRT, send_reset);
-	// signal(SIGTERM, send_reset);
-	// signal(SIGINT, send_reset);
-	// signal(SIGKILL, send_reset);
-
+		
 	if (argc == 3)
 	{
 		i = 0;
-		kill(ft_atoi(argv[1]), SIGUSR2);
+		if (!is_valid_pid(argv[1]))
+		{
+			ft_printf("Error: Invalid PID\n");
+			return (1);
+		}
 		while (argv[2][i])
 		{
 			send_msg(ft_atoi(argv[1]), argv[2][i]);
 			i++;
 		}
-		send_msg(ft_atoi(argv[1]), '\0');
+		send_msg(ft_atoi(argv[1]), 0);
 		return (0);
 	}
 	else

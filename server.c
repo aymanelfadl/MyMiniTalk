@@ -14,52 +14,46 @@
 #include <signal.h>
 #include <string.h>
 #include "libft/libft.h"
+#include <stdio.h>
 
-int msg_in_prog = 0;
+int in_prog = 1;
 
 void	handler(int signum)
 {
 	static int				index;
 	static unsigned char	c;
 
-	if (msg_in_prog)
+	index++;
+	c |= (signum == SIGUSR2);
+	if (index == 8)
 	{
-		index++;
-		c |= (signum == SIGUSR2);
-		if (index == 8)
-		{
-			if (c == '\0')
-			{
-				write (1, "\n", 1);
-				msg_in_prog = 0;
-			}
-			else
-				write (1, &c, 1);
-			index = 0;
-			c = 0;
-		}
+		if (c == '\0')
+			write(1, "\n", 1);
 		else
-			c <<= 1;
-	}
-	if (signum == SIGUSR2 && !msg_in_prog)
-	{
-		msg_in_prog = 1;
+			write(1, &c, 1);
 		index = 0;
 		c = 0;
 	}
-	
+	else
+		c <<= 1;
 }
+
 
 int	main(void)
 {
 	pid_t	pid;
+	struct sigaction sa;
+
+	sa.sa_handler = handler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = SA_SIGINFO;
 
 	pid = getpid();
 	ft_printf ("PID: %d\n", pid);
 	while (1)
 	{
-		signal(SIGUSR1, handler);
-		signal(SIGUSR2, handler);
+		sigaction(SIGUSR1, &sa, NULL);
+		sigaction(SIGUSR2, &sa, NULL);
 		pause();
 	}
 	return (0);
