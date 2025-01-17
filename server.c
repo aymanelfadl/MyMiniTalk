@@ -16,8 +16,6 @@
 #include "libft/libft.h"
 #include <stdio.h>
 
-int in_prog = 1;
-
 void	handler(int signum)
 {
 	static int				index;
@@ -38,10 +36,10 @@ void	handler(int signum)
 		c <<= 1;
 }
 
-
 int	main(void)
 {
 	pid_t	pid;
+
 	pid = getpid();
 	ft_printf ("PID: %d\n", pid);
 	while (1)

@@ -17,20 +17,6 @@
 
 void	send_msg(int pid, char c)
 {
-	struct sigaction sa;
-	sigset_t mySet;
-
-	sigfillset(&mySet);
-
-	sigdelset (&mySet, SIGUSR1);
-	sigdelset (&mySet, SIGUSR2);
-
-	sa.sa_handler = handler;
-	sa.sa_flags = SA_SIGINFO;
-	sigemptyset(&sa.sa_mask);
-    sa.sa_flags = 0; 
-
-	sa.sa_mask = mySet;
 	int				i;
 
 	i = 8;
@@ -53,7 +39,7 @@ void	send_msg(int pid, char c)
 				exit(EXIT_FAILURE);
 			}
 		}
-		usleep(1000);
+		usleep(800);
 	}
 }
 
@@ -70,10 +56,29 @@ int	is_valid_pid(const char *str)
 	return (1);
 }
 
+void no_stop(int signum)
+{
+	(void)signum;
+}
+void setup_stop_signals(void)
+{
+    signal(SIGABRT, no_stop);    // Abort signal
+    signal(SIGINT, no_stop);     // Interrupt (Ctrl+C)
+    signal(SIGQUIT, no_stop);    // Quit (Ctrl+\)
+    signal(SIGTERM, no_stop);    // Termination signal
+    signal(SIGHUP, no_stop);     // Hangup
+    signal(SIGALRM, no_stop);    // Alarm
+    signal(SIGVTALRM, no_stop);  // Virtual timer
+    signal(SIGPROF, no_stop);    // Profiling timer
+    signal(SIGUSR1, no_stop);    // User defined signal 1
+    signal(SIGUSR2, no_stop);    // User defined signal 2
+    signal(SIGPIPE, no_stop);    // Broken pipe
+}
+
 int	main(int argc, char *argv[])
 {
 	int	i;
-
+	setup_stop_signals();
 	if (argc == 3)
 	{
 		i = 0;
