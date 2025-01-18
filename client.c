@@ -23,11 +23,6 @@ static	void	handle_response(int signum, siginfo_t *info, void *context)
 	(void)context;
 	if (signum == SIGUSR1)
 	{
-		if (!g_done)
-		{
-			ft_printf("bro wait me to finish koon t7chem chi chewi!\n");
-			return ;
-		}
 		ft_printf("\nMessage transmitted successfully!\n");
 		exit(0);
 	}

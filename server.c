@@ -23,6 +23,20 @@ static	void	reset_data(int *active, int *client_pid, char *c, int *bits)
 	*active = 0;
 }
 
+static int print_char(int *bits, char *c)
+{
+	if (*bits == 8)
+	{
+		if (*c == '\0')
+			return (1);
+		write(1, c, 1);
+		*c = 0;
+		*bits = 0;
+	}
+	return 0;
+}
+
+
 static	void	handle_signal(int signum, siginfo_t *info, void *context)
 {
 	static int	active;
@@ -43,17 +57,11 @@ static	void	handle_signal(int signum, siginfo_t *info, void *context)
 	else if (signum == SIGUSR2)
 		c <<= 1;
 	bits++;
-	if (bits == 8)
+	if (print_char(&bits, &c))
 	{
-		if (c == '\0')
-		{
-			kill(client_pid, SIGUSR1);
-			reset_data(&active, &client_pid, &c, &bits);
-			return ;
-		}
-		write(1, &c, 1);
-		c = 0;
-		bits = 0;
+		kill(client_pid, SIGUSR1);
+		reset_data(&active, &client_pid, &c, &bits);
+		return ;
 	}
 	kill(client_pid, SIGUSR2);
 }
