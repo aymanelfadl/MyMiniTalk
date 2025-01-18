@@ -1,13 +1,13 @@
-/* server.c */
 #include <signal.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include "libft/libft.h"
 
 typedef struct s_data
 {
     char    c;
     int     bits;
-    pid_t   client_pid;
+    int     client_pid;
     int     active;
 }   t_data;
 
@@ -24,18 +24,14 @@ static void reset_data(void)
 static void handle_signal(int signum, siginfo_t *info, void *context)
 {
     (void)context;
-
     if (g_data.active && g_data.client_pid != info->si_pid)
-    {
-        kill(info->si_pid, SIGUSR1);
-        return;
-    }
+        reset_data();
+
     if (!g_data.active)
     {
         g_data.client_pid = info->si_pid;
         g_data.active = 1;
     }
-
     if (signum == SIGUSR1)
         g_data.c = (g_data.c << 1) | 1;
     else if (signum == SIGUSR2)
