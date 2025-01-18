@@ -1,103 +1,134 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   client.c                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: aelfadl <marvin@42.fr>                     +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/15 11:00:02 by aelfadl           #+#    #+#             */
-/*   Updated: 2025/01/15 11:22:34 by aelfadl          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "libft/libft.h"
+/* client.c */
 #include <signal.h>
-#include <stdlib.h>
 #include <unistd.h>
+#include <stdlib.h>
 
-void	send_msg(int pid, char c)
+typedef struct s_data
 {
-	int				i;
+    int received;
+    int busy;
+}   t_data;
 
-	i = 8;
-	while (i > 0)
-	{
-		i--;
-		if ((((unsigned char)c >> i) % 2) == 0)
-		{
-			if ((kill(pid, SIGUSR1)) == -1)
-			{
-				ft_printf("ERR IN SIGUSR1!!");
-				exit(EXIT_FAILURE);
-			}
-		}
-		else
-		{
-			if ((kill(pid, SIGUSR2)) == -1)
-			{
-				ft_printf("ERR IN SIGUSR2 ");
-				exit(EXIT_FAILURE);
-			}
-		}
-		usleep(800);
-	}
+static t_data g_data;
+
+static void handle_int(int signum)
+{
+    (void)signum;
+    ft_printf("\nTransmission interrupted. Exiting...\n");
+    exit(0);
 }
 
-int	is_valid_pid(const char *str)
+static void handle_response(int signum, siginfo_t *info, void *context)
 {
-	int	i = 0;
-
-	while (str[i])
-	{
-		if (!ft_isdigit(str[i]))
-			return (0);
-		i++;
-	}
-	return (1);
+    (void)info;
+    (void)context;
+    
+    if (signum == SIGUSR1)
+    {
+        if (!g_data.received) // If we haven't received any acknowledgment yet
+        {
+            g_data.busy = 1;  // Server is busy with another client
+            return;
+        }
+        ft_printf("\nMessage transmitted successfully!\n");
+        exit(0);
+    }
+    else if (signum == SIGUSR2)
+        g_data.received = 1;
 }
 
-void no_stop(int signum)
+static int wait_response(void)
 {
-	(void)signum;
-}
-void setup_stop_signals(void)
-{
-    signal(SIGABRT, no_stop);    // Abort signal
-    signal(SIGINT, no_stop);     // Interrupt (Ctrl+C)
-    signal(SIGQUIT, no_stop);    // Quit (Ctrl+\)
-    signal(SIGTERM, no_stop);    // Termination signal
-    signal(SIGHUP, no_stop);     // Hangup
-    signal(SIGALRM, no_stop);    // Alarm
-    signal(SIGVTALRM, no_stop);  // Virtual timer
-    signal(SIGPROF, no_stop);    // Profiling timer
-    signal(SIGUSR1, no_stop);    // User defined signal 1
-    signal(SIGUSR2, no_stop);    // User defined signal 2
-    signal(SIGPIPE, no_stop);    // Broken pipe
+    int timeout;
+
+    timeout = 0;
+    while (!g_data.received && !g_data.busy)
+    {
+        if (timeout++ > 1000)
+        {
+            ft_printf("Error: Server not responding\n");
+            return (-1);
+        }
+        usleep(100);
+    }
+    
+    if (g_data.busy)
+    {
+        ft_printf("Error: Server is busy with another client. Please try again later.\n");
+        return (-1);
+    }
+    
+    return (0);
 }
 
-int	main(int argc, char *argv[])
+static int send_char(char c, pid_t server_pid)
 {
-	int	i;
-	setup_stop_signals();
-	if (argc == 3)
-	{
-		i = 0;
-		if (!is_valid_pid(argv[1]))
-		{
-			ft_printf("Error: Invalid PID\n");
-			return (1);
-		}
-		while (argv[2][i])
-		{
-			send_msg(ft_atoi(argv[1]), argv[2][i]);
-			i++;
-		}
-		send_msg(ft_atoi(argv[1]), 0);
-		return (0);
-	}
-	else
-	{
-		ft_printf("Usage: %s <PID> <message>\n", argv[0]);
-		return (1);
-	}
+    int bit;
+
+    bit = 7;
+    while (bit >= 0)
+    {
+        g_data.received = 0;
+        if ((c >> bit) & 1)
+            kill(server_pid, SIGUSR1);
+        else
+            kill(server_pid, SIGUSR2);
+        
+        if (wait_response() == -1)
+            return (-1);
+        bit--;
+    }
+    return (0);
+}
+
+int main(int argc, char *argv[])
+{
+    struct sigaction sa;
+    pid_t server_pid;
+    int i;
+
+    if (argc != 3)
+    {
+        ft_printf("Usage: %s <server_pid> <message>\n", argv[0]);
+        exit(1);
+    }
+    server_pid = atoi(argv[1]);
+    if (server_pid <= 0)
+    {
+        ft_printf("Error: Invalid server PID\n");
+        exit(1);
+    }
+
+    // Initialize data
+    g_data.received = 0;
+    g_data.busy = 0;
+
+    // Set up SIGINT handler
+    signal(SIGINT, handle_int);
+
+    // Set up response handlers
+    sigemptyset(&sa.sa_mask);
+    sa.sa_sigaction = handle_response;
+    sa.sa_flags = SA_SIGINFO | SA_RESTART;
+    
+    if (sigaction(SIGUSR1, &sa, NULL) == -1 || 
+        sigaction(SIGUSR2, &sa, NULL) == -1)
+    {
+        ft_printf("Error: Failed to setup signal handlers\n");
+        exit(1);
+    }
+
+    ft_printf("Sending message to server (PID: %d)...\n", server_pid);
+    i = 0;
+    while (argv[2][i])
+    {
+        if (send_char(argv[2][i], server_pid) == -1)
+            exit(1);
+        i++;
+    }
+    send_char('\0', server_pid);
+    
+    // Wait for final acknowledgment
+    usleep(1000);
+    return (0);
 }
