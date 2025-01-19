@@ -23,7 +23,7 @@ static	void	handle_response(int signum, siginfo_t *info, void *context)
 	(void)context;
 	if (signum == SIGUSR1)
 	{
-		ft_printf("\nMessage transmitted successfully!\n");
+		ft_printf("Message transmitted successfully!\n");
 		exit(0);
 	}
 	else if (signum == SIGUSR2)
@@ -41,6 +41,7 @@ static	int	wait_response(void)
 			return (ft_printf("Error: Server not responding\n"), -1);
 		usleep(100);
 	}
+	ft_printf("Received\n");
 	return (0);
 }
 
