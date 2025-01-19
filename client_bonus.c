@@ -32,7 +32,8 @@ static	void	handle_response(int signum, siginfo_t *info, void *context)
 
 static	int	wait_response(void)
 {
-	int	timeout;
+	int			timeout;
+	static int	i;
 
 	timeout = 0;
 	while (!g_done)
@@ -41,6 +42,9 @@ static	int	wait_response(void)
 			return (ft_printf("Error: Server not responding\n"), -1);
 		usleep(100);
 	}
+	if (!i)
+		i = 1;
+	ft_printf("Received %d\n", i++);
 	return (0);
 }
 
