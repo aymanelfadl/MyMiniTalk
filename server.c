@@ -23,7 +23,7 @@ static	void	reset_data(int *active, int *client_pid, char *c, int *bits)
 	*active = 0;
 }
 
-static int print_char(int *bits, char *c)
+static	int	print_char(int *bits, char *c)
 {
 	if (*bits == 8)
 	{
@@ -33,9 +33,8 @@ static int print_char(int *bits, char *c)
 		*c = 0;
 		*bits = 0;
 	}
-	return 0;
+	return (0);
 }
-
 
 static	void	handle_signal(int signum, siginfo_t *info, void *context)
 {
@@ -72,11 +71,11 @@ int	main(void)
 
 	ft_printf("Server PID: %d\n", getpid());
 	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = SA_SIGINFO;
 	sa.sa_sigaction = handle_signal;
-	sa.sa_flags = SA_SIGINFO | SA_RESTART;
 	if (sigaction(SIGUSR1, &sa, NULL) == -1
 		|| sigaction(SIGUSR2, &sa, NULL) == -1)
-		return (ft_printf("Error: Failed to setup signal handlers\n"), 1);
+		return (ft_printf("Error\n"), 1);
 	while (1)
 		pause();
 	return (0);

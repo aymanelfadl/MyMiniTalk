@@ -77,7 +77,7 @@ int	main(int argc, char *argv[])
 	sa.sa_flags = SA_SIGINFO;
 	if (sigaction(SIGUSR1, &sa, NULL) == -1
 		|| sigaction(SIGUSR2, &sa, NULL) == -1)
-		return (ft_printf("Error: Failed to setup signal handlers\n"), 1);
+		return (ft_printf("Error\n"), 1);
 	i = 0;
 	while (argv[2][i])
 		send_char(argv[2][i++], atoi(argv[1]));
